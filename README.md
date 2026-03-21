@@ -208,5 +208,3 @@ This README does not provide instructions for exploiting live systems. It docume
 
 * **[J4ck3LSyN](https://jackalsyn.com)**
 * **[github](https://github.com/J4ck3LSyN-Gen2)**
-
-<img src="https://tryhackme-badges.s3.amazonaws.com/J4ck3LSyN.png" alt="Your Image Badge" />
