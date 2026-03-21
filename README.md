@@ -72,6 +72,8 @@ From inside the attacker container, you can perform lab-safe checks such as conf
 python3 sploit.py http://sp_vulnerable_lab/
 # If service-name DNS resolution fails in your environment, use the lab IP:
 # python3 sploit.py http://10.10.10.5
+# If you wish to go past base validation you can include wanted commands.
+python3 sploit.py http://sp_vulnerable_lab whoami
 ```
 
 Expected behavior in the local mock environment:
