@@ -32,14 +32,20 @@ Start the lab from the `lab/` directory:
 
 ```bash
 cd lab
-docker compose build
-docker compose up -d
+docker compose up --build -d
 ```
 
 Confirm both containers are running:
 
 ```bash
 docker compose ps
+```
+
+Logging incase of issues or exploit validation:
+
+```bash
+docker logs attacker-terminal
+docker logs sp_vulnerable_lab
 ```
 
 The lab is intentionally isolated:
