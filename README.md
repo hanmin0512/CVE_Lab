@@ -32,19 +32,21 @@ Start the lab from the `lab/` directory:
 
 ```bash
 cd lab
-docker compose up --build -d
+docker-compose up --build -d
 ```
+
+If your Docker setup requires elevated privileges, run the same commands with `sudo`.
 
 Confirm both containers are running:
 
 ```bash
-docker compose ps
+docker-compose ps
 ```
 
 Logging incase of issues or exploit validation:
 
 ```bash
-docker logs attacker-terminal
+docker logs sp_attacker
 docker logs sp_vulnerable_lab
 ```
 
@@ -57,14 +59,15 @@ The lab is intentionally isolated:
 Open a shell in the attacker container:
 
 ```bash
-docker compose exec attacker-terminal sh
+docker exec -it sp_attacker bash
 ```
 
 From inside the attacker container, you can perform lab-safe checks such as confirming the target is reachable and testing the script in verification mode against the mock target:
 
 ```bash
-python3 sploit.py http://sharepoint-target
-# NOTE: If `http://sharepoint-target` is not 'reachable' for some reason, you can attack it directly on `http://10.10.10.5`
+python3 sploit.py http://sp_vulnerable_lab/
+# If service-name DNS resolution fails in your environment, use the lab IP:
+# python3 sploit.py http://10.10.10.5
 ```
 
 Expected behavior in the local mock environment:
@@ -85,13 +88,13 @@ Stop and remove the lab containers and network:
 
 ```bash
 cd lab
-docker compose down
+docker-compose down
 ```
 
 If you want to remove built images as well:
 
 ```bash
-docker compose down --rmi local
+docker-compose down --rmi local
 ```
 
 If you want a full reset of the lab workspace artifacts, remove any generated result files after shutdown:
@@ -102,7 +105,7 @@ rm -f vuln.lst
 
 Recommended cleanup practice after each exercise:
 
-1. shut down the lab with `docker compose down`;
+1. shut down the lab with `docker-compose down`;
 2. remove result artifacts that should not persist;
 3. rebuild the lab before the next run if you changed code, dependencies, or container settings.
 
