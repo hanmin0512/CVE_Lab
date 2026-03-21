@@ -7,6 +7,10 @@ This repository appears to be a proof-of-concept research project for validating
 >
 > The contents of this repository should be treated as sensitive security research material. If you use this project for assessment work, keep execution isolated, log all activity, and coordinate with the system owner before testing.
 
+<div align="center">
+    <img src="imgs/PoC.png" width="100%" alt="Proof of Concept">
+</div>
+
 ## Project Scope
 
 The repository currently contains:
