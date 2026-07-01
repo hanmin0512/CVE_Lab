@@ -8,6 +8,10 @@ services:
       dockerfile: Dockerfile
     container_name: sp_vulnerable_lab
     hostname: sharepoint-target
+    env_file:             # <--- 이 두 줄을 추가하세요!
+      - .env              # <---
+    ports:
+      - "8081:80"
     networks:
       lab_net:
         ipv4_address: 10.10.10.5
@@ -26,42 +30,11 @@ services:
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 0
 
-  # The "Attacker" - Your Python Script
-  attacker-terminal:
-    build:
-      context: .
-      dockerfile: attacker.Dockerfile
-    container_name: sp_attacker
-    hostname: attacker-terminal
-    volumes:
-      - .:/lab
-    working_dir: /lab
-    depends_on:
-      - sharepoint-target
-    networks:
-      lab_net:
-        ipv4_address: 10.10.10.10
-    user: "${UID:-1000}:${GID:-1000}"
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,size=64m
-    pids_limit: 128
-    mem_limit: 512m
-    cpus: 1.0
-    init: true
-    tty: true
-    stdin_open: true
-    restart: "no"
-    entrypoint: ["tail", "-f", "/dev/null"]
 
 networks:
   lab_net:
     driver: bridge
-    internal: true
+    # internal: true
     ipam:
       config:
         - subnet: 10.10.10.0/24
