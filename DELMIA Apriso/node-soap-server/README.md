@@ -110,22 +110,29 @@ xmlns:tem="http://tempuri.org/">
 
 <br><br>
 
-2. **엔드포인트 접근:** 파일 업로드 패킷을 변조하여 취약한 엔드포인트로 접근을 시도합니다.
+2. **엔드포인트 접근:** 파일 업로드 패킷을 변조하여 취약한 엔드포인트로 접근을 시도합니다. (Content-Type: multipart/form-data 형식 요청은 확장자 검증)
+
+<img width="1417" height="847" alt="image" src="https://github.com/user-attachments/assets/3e820b51-ed12-4fae-a595-95fd0c5e5f77" />
+
+<img width="1580" height="767" alt="image" src="https://github.com/user-attachments/assets/8f759e8e-4acf-4c80-a36c-d689cc392925" />
 
 
 <br><br>
 
-3. **메서드 변조:** HTTP 요청 Method를 `GET`에서 `POST`로 변경합니다.
+3. **파일 업로드 재시도:** 악성 페이로드를 주입하기 위해 파일 업로드 재시도
+
+<img width="1417" height="847" alt="image" src="https://github.com/user-attachments/assets/48344025-9871-4695-b59a-5a589d838165" />
 
 
 <br><br>
 
-4. **체이닝 페이로드 주입:** `Referer` 헤더 조작 등을 통한 **인증 우회(Auth Bypass)** 페이로드와 **역직렬화(Deserialization)** 페이로드를 동시에 삽입하여 요청을 전송합니다.
+4. **체이닝 페이로드 주입:** 재시도 패킷에 Content-type 변조 및, filename 파라미터 값에 Path Traversal 공격 시도
 
+<img width="1631" height="808" alt="image" src="https://github.com/user-attachments/assets/c32ba3ee-a1dd-4f09-8080-0b33d80d9d7b" />
 
 <br><br>
 
-5. **실행 확인:** 인증되지 않은 외부 공격자가 안전하지 않은 역직렬화를 트리거하여, 타겟 서버의 쉘 명령어 실행 권한을 탈취한 것을 최종 확인합니다.
+5. **실행 확인:** 생
 
 
 
@@ -133,17 +140,11 @@ xmlns:tem="http://tempuri.org/">
 
 ## Credits & Authors
 
-| Role | Author | Links |
+| Role | Links |
 | :--- | :--- | :--- |
-| **Original Author** | J4ck3LSyN | [Website](https://jackalsyn.com) / [GitHub](https://github.com/J4ck3LSyN-Gen2) |
-| **Modified & Enhanced By** | hanmin0512 | [GitHub](https://github.com/hanmin0512) |
+| **Original Report** | https://projectdiscovery.io/blog/remote-code-execution-in-delmia-apriso |
+| **Modified & Enhanced By** | [GitHub](https://github.com/hanmin0512) |
 
 <br><br><br>
 
-## 취약 버전
-  - Microsoft SharePoint Server Subscription Edition 16.0.18526.20508 버전 미만
-  - Microsoft SharePoint Server 2019 16.0.10417.20037 버전 미만
 
-  
-> **Disclaimer**
-> *This repository is a customized fork/version of the original PoC for CVE-2025-53770, modified for enhanced usability (Requests conversion, Proxy support, etc.). This documentation and the associated lab environment are strictly for educational and defensive research purposes.*
