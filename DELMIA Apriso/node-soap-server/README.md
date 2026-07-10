@@ -132,7 +132,7 @@ xmlns:tem="http://tempuri.org/">
 
 <br><br>
 
-5. **실행 확인:** 생
+5. **실행 확인:** 생략 
 
 
 
@@ -146,5 +146,6 @@ xmlns:tem="http://tempuri.org/">
 | **Modified & Enhanced By** | [GitHub](https://github.com/hanmin0512) |
 
 <br><br><br>
-
+## 비고
+해당 취약점 환경 실습 lab은 실제 발생한 asp 환경이 아닌 목업 형식의 nodeJS 형태로 발생한 취약점을 실험 할 수 있게 가상으로 구성한 환경입니다.
 
