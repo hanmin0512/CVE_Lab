@@ -141,7 +141,7 @@ xmlns:tem="http://tempuri.org/">
 ## Credits & Authors
 
 | Role | Links |
-| :--- | :--- | :--- |
+| :--- | :--- |
 | **Original Report** | https://projectdiscovery.io/blog/remote-code-execution-in-delmia-apriso |
 | **Modified & Enhanced By** | [GitHub](https://github.com/hanmin0512) |
 
