@@ -51,27 +51,6 @@ xmlns:tem="http://tempuri.org/">
 
 **Payload Decoded**
 ```
-POST /Apriso/MessageProcessor/FlexNetMessageProcessor.svc HTTP/1.1
-Host: 127.0.0.1
-Content-Length: 6747
-Cache-Control: max-age=0
-sec-ch-ua: "Not-A.Brand";v="24", "Chromium";v="146"
-sec-ch-ua-mobile: ?0
-sec-ch-ua-platform: "Windows"
-Accept-Language: ko-KR,ko;q=0.9
-Origin: http://127.0.0.1
-Content-type: text/xml;charset=utf-8
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-Sec-Fetch-Site: same-origin
-Sec-Fetch-Mode: navigate
-Sec-Fetch-User: ?1
-Sec-Fetch-Dest: document
-Referer: http://127.0.0.1/login.html
-Accept-Encoding: gzip, deflate, br
-Connection: keep-alive
-
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 xmlns:tem="http://tempuri.org/">
     <soapenv:Header/>
