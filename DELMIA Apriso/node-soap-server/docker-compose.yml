@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  node-backend:
+    build: .
+    ports:
+      - "80:8080"  # 로컬 80 포트를 컨테이너의 8080에 연결
+    volumes:
+      - ./data:/usr/src/app/data
